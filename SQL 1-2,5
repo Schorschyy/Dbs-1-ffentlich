@@ -122,8 +122,7 @@ select a.Aufnr, a.AufDat, m.Mitname from Auftrag a Left Join Mitarbeiter m on a.
 --g
 select e.EtID,
 SUM(m.Anzahl)
-from Ersatzteil e Left Join Montage m on m.EtID=e.EtID Left Join (select * from Auftrag where MONTH(ErlDat) = MONTH(GETDATE())-1) a on a.Aufnr=m.AufNr
+from Ersatzteil e Join Montage m on m.EtID=e.EtID Join (select * from Auftrag where MONTH(ErlDat) = MONTH(GETDATE())-1) a on a.Aufnr=m.AufNr
 Group by e.EtID;
-
 --2.6
 select MitID, 
