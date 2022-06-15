@@ -120,12 +120,10 @@ Group by a.Aufnr
 --f
 select a.Aufnr, a.AufDat, m.Mitname from Auftrag a Left Join Mitarbeiter m on a.MitID=m.MitID where MONTH(a.AufDat) = MONTH(GETDATE());
 --g
-select a.Aufnr,
-	SUM(m.Anzahl*e.EtPreis) as Materialkosten,
-	AVG(Dauer*i.MitStundensatz) as Lohnkosten,
-	AVG(a.Anfahrt)*0.2 as Fahrtkosten
-from Auftrag a Join Montage m on m.AufNr=a.Aufnr Join Mitarbeiter i on i.MitID=a.MitID Join Ersatzteil e on e.EtID=m.EtID
-Group by a.Aufnr
+select e.EtID,
+SUM(m.Anzahl)
+from Ersatzteil e Left Join Montage m on m.EtID=e.EtID Left Join (select * from Auftrag where MONTH(ErlDat) = MONTH(GETDATE())-1) a on a.Aufnr=m.AufNr
+Group by e.EtID;
 
 --2.6
 select MitID, 
