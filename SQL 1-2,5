@@ -62,8 +62,7 @@ select * from Ersatzteil where EtBezeichnung like 'S%';
 --d
 select * from Auftrag where Dauer between 2 and 3 or Anfahrt >= 80;
 --e
-select MitName,MitJob from Mitarbeiter where MitEinsatzort = 'Radebeul' Order by MitName;
---f
+select MitName,MitJob from Mitarbeiter where MitEinsatzort = 'Radebeul' Order by MitName; --Ändern Nicht nur MIt
 select * from Auftrag where	Dauer is Null;
 --g
 select KunNr, Anfahrt, Anfahrt*2.5 as Anfahrtskosten from Auftrag;
@@ -81,9 +80,8 @@ select Aufnr, AufDat, ErlDat, datediff(day, AufDat, ErlDat) as Frist
 from Auftrag where datepart(month, ErlDat) = datepart(month, getdate());
 
 --c
-update Auftrag
-set Dauer = '0' where dauer is null;
-select Aufnr, Dauer from Auftrag;
+
+select Aufnr,isnull(Dauer, 0) from Auftrag;
 
 --2.3
 --a
@@ -102,14 +100,6 @@ select min(AufDat) as minimum_Dat from Auftrag where ErlDat is null;
 --2.4
 --b
 select MitID, DATEPART(dw, ErlDat) as Wochentag, AVG(Dauer) as DurchschnittlicheDauer from Auftrag where MitID is not null Group by MitID , DATEPART(weekday,ErlDat);
---b
-select MitID, avg(Dauer) as Mo from Auftrag  where Datepart(weekday,ErlDat) = '1' group by MitID; 
-select MitID, avg(Dauer) as Di from Auftrag  where Datepart(weekday,ErlDat) = '2' group by MitID;
-select MitID, avg(Dauer) as Mi from Auftrag  where Datepart(weekday,ErlDat) = '3' group by MitID;
-select MitID, avg(Dauer) as Do from Auftrag  where Datepart(weekday,ErlDat) = '4' group by MitID;
-select MitID, avg(Dauer) as Fr from Auftrag  where Datepart(weekday,ErlDat) = '5' group by MitID;
-select MitID, avg(Dauer) as Sa from Auftrag  where Datepart(weekday,ErlDat) = '6' group by MitID;
-select MitID, avg(Dauer) as So from Auftrag  where Datepart(weekday,ErlDat) = '7' group by MitID;
 
 --2.5
 --a
@@ -125,7 +115,8 @@ select a.Aufnr,
 	SUM(m.Anzahl*e.EtPreis) as Materialkosten,
 	AVG(Dauer*i.MitStundensatz) as Lohnkosten,
 	AVG(a.Anfahrt)*0.2 as Fahrtkosten
-from Auftrag a Join Montage m on m.AufNr=a.Aufnr Join Mitarbeiter i on i.MitID=a.MitID Join Ersatzteil e on e.EtID=m.EtID Group by a.Aufnr
+from Auftrag a Join Montage m on m.AufNr=a.Aufnr Join Mitarbeiter i on i.MitID=a.MitID Join Ersatzteil e on e.EtID=m.EtID 
+Group by a.Aufnr
 --f
 select a.Aufnr, a.AufDat, m.Mitname from Auftrag a Left Join Mitarbeiter m on a.MitID=m.MitID where MONTH(a.AufDat) = MONTH(GETDATE());
 --g
@@ -135,3 +126,6 @@ select a.Aufnr,
 	AVG(a.Anfahrt)*0.2 as Fahrtkosten
 from Auftrag a Join Montage m on m.AufNr=a.Aufnr Join Mitarbeiter i on i.MitID=a.MitID Join Ersatzteil e on e.EtID=m.EtID
 Group by a.Aufnr
+
+--2.6
+select MitID, 
