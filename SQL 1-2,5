@@ -200,15 +200,6 @@ having sum(Anzahl) < EtAnzLager
 -- beide falsch
 
 --b
-select e.EtID, EtAnzLager
-from Ersatzteil e
-Join
-(select EtID, SUM(ANzahl) as Summe
-from Montage
-group by EtID) a
-on e.EtID=a.EtID
-where a.Summe < e.EtAnzLager
-
 select m.EtID 
 from Montage m
 group by m.EtID
@@ -232,6 +223,29 @@ MitStundensatz = (select MIN(MitStundensatz)
 					where MitJob ='Monteur')
 where MitJob ='Azubi'
 
+
+
+--2.8c
+select * into Montage1 from Montage
+
+ select * into Ersatzteil1 from Ersatzteil
+ delete from Montage1 where EtID in select(EtID from Ersatzteil1 where EtHersteller = 'Mosch')
+ delete from Ersatzteil1 where EtHersteller = 'Mosch'
+
+ select * from Ersatzteil1
+
+ --2.8d
+select * into Montage2 from Montage
+select * into Auftrag2 from Auftrag
+select * into Kunde2 from Kunde
+
+select distinct * into tempKunde from Kunde where KunNr not in (select KunNr from Auftrag where Month(AufDat) != 3 or Dauer is null)
+
+delete from Montage2 Where AufNr in (select AufNr from Auftrag2 where Month(AufDat) = 3)
+delete from Auftrag2 where Month(AufDat) = 3
+delete from tempKunde from Kunde2
+
+select
 --2.9
 
 select KunOrt
@@ -319,3 +333,13 @@ as
 return
 
 exec KundenjeMitarbeiter 
+
+--3.2
+create procedure AGroeßer(@Parameter nvarchar(10))
+as
+	select EtID, Sum(Anzahl) As Häufigkeit
+	from montage 
+	Group by EtID 
+	having Sum(Anzahl) > @Parameter
+return 
+exec AGroeßer '45'
